@@ -4,9 +4,10 @@ from __future__ import print_function
 import random
 
 class World (object):
-    def __init__(self, width, height):
+    def __init__(self, width, height, is_torus):
         self.width = width
         self.height = height
+        self.is_torus = is_torus
         self.field = {(x, y): -1 for y in range(height) for x in range(width)}
 
     def __contains__(self, pos):
@@ -34,6 +35,11 @@ class World (object):
                     (x-1, y  ),           (x+1, y  ),
                     (x-1, y+1), (x, y+1), (x+1, y+1),
                 )
+                if self.is_torus:
+                    surround_poses = map(lambda (x, y): (
+                        {-1: self.width  - 1, self.width:  0}.get(x, x),
+                        {-1: self.height - 1, self.height: 0}.get(y, y),
+                    ), surround_poses)
                 count = sum(1 for pos in surround_poses if pos in self and (self[pos] > 1 or self[pos] == -1))
                 if self[x, y] < -1 and count == 3:
                     self[x, y] = 1
@@ -44,7 +50,7 @@ class World (object):
 WIDTH = 40
 HEIGHT = 30
 
-world = World(width=WIDTH, height=HEIGHT)
+world = World(width=WIDTH, height=HEIGHT, is_torus=True)
 
 # Populate the world randomly
 for y in range(HEIGHT):
