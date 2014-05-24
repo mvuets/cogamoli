@@ -69,14 +69,22 @@ for y in range(HEIGHT):
         world[x, y] = random.choice((World.DEAD, World.ALIVE))
 
 
+CEASING = object()
+ARISING = object()
 def render(world):
     CELL_TO_CHAR = {
         World.DEAD: " ",
+        ARISING: ".",
         World.ALIVE: "O",
+        CEASING: "x",
     }
     for y in range(HEIGHT):
         for x in range(WIDTH):
-            print "%s" % (CELL_TO_CHAR[world[x, y]],),
+            pos = (x, y)
+            cell = (pos in world.kindergarten and ARISING) \
+                or (pos in world.morgue and CEASING) \
+                or (world[x, y])
+            print "%s" % (CELL_TO_CHAR[cell],),
         print
 
 print "<enter> to step; ^C to quit"
