@@ -77,6 +77,6 @@ def render(world):
 
 print("<enter> to step; ^C to quit")
 while True:
-    raw_input()
     render(world)
     world.step()
+    raw_input()
