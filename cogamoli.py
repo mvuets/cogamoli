@@ -8,8 +8,6 @@ class World (object):
         self.width = width
         self.height = height
         self.field = {}
-        self.morgue = set()
-        self.kindergarten = set()
 
     def __contains__(self, pos):
         return 0 <= pos[0] < self.width and 0 <= pos[1] < self.height
@@ -26,28 +24,21 @@ class World (object):
         self.field[pos] = val
 
     def step(self):
-        self.morgue = set()
-        self.kindergarten = set()
         for y in range(self.height):
             for x in range(self.width):
-                pos = (x, y)
+                self[x, y] += (self[x, y] > 0 and 1 or -1)
+        for y in range(self.height):
+            for x in range(self.width):
                 surround_poses = (
                     (x-1, y-1), (x, y-1), (x+1, y-1),
                     (x-1, y  ),           (x+1, y  ),
                     (x-1, y+1), (x, y+1), (x+1, y+1),
                 )
-                count = sum(1 for pos in surround_poses if pos in self and self[pos] > 0)
-                age = self[pos]
-                if age < 0 and count == 3:
-                    self.kindergarten.add(pos)
-                elif age > 0 and not 2 <= count <= 3:
-                    self.morgue.add(pos)
-                else:
-                    self[pos] = age + (age > 0 and 1 or -1)
-        for pos in self.kindergarten:
-            self.field[pos] = 1
-        for pos in self.morgue:
-            self.field[pos] = -1
+                count = sum(1 for pos in surround_poses if pos in self and (self[pos] > 1 or self[pos] == -1))
+                if self[x, y] < -1 and count == 3:
+                    self[x, y] = 1
+                elif self[x, y] > 1 and not 2 <= count <= 3:
+                    self[x, y] = -1
 
 
 WIDTH = 40
