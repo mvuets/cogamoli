@@ -37,13 +37,13 @@ class World (object):
                     (x-1, y+1), (x, y+1), (x+1, y+1),
                 )
                 count = sum(1 for pos in surround_poses if pos in self and self[pos] > 0)
-                cell = self[pos]
-                if cell < 0 and count == 3:
+                age = self[pos]
+                if age < 0 and count == 3:
                     self.kindergarten.add(pos)
-                elif cell > 0 and not 2 <= count <= 3:
+                elif age > 0 and not 2 <= count <= 3:
                     self.morgue.add(pos)
                 else:
-                    self[pos] = cell + (cell > 0 and 1 or -1)
+                    self[pos] = age + (age > 0 and 1 or -1)
         for pos in self.kindergarten:
             self.field[pos] = 1
         for pos in self.morgue:
