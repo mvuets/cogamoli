@@ -7,7 +7,7 @@ class World (object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.field = {}
+        self.field = {(x, y): -1 for y in range(height) for x in range(width)}
 
     def __contains__(self, pos):
         return 0 <= pos[0] < self.width and 0 <= pos[1] < self.height
@@ -15,7 +15,7 @@ class World (object):
     def __getitem__(self, pos):
         if pos not in self:
             raise KeyError("pos=%s is out of boundaries" % (pos,))
-        return self.field.get(pos, -1)
+        return self.field[pos]
 
     def __setitem__(self, pos, val):
         self[pos] # boundary check
