@@ -4,9 +4,6 @@ from __future__ import print_function
 import random
 
 class World (object):
-    DEAD = -2
-    ALIVE = 1
-
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -20,17 +17,13 @@ class World (object):
     def __getitem__(self, pos):
         if pos not in self:
             raise KeyError("pos=%s is out of boundaries" % (pos,))
-        return self.field.get(pos, World.DEAD)
+        return self.field.get(pos, -1)
 
     def __setitem__(self, pos, val):
         self[pos] # boundary check
-        if not any(val == o for o in (World.DEAD, World.ALIVE)):
-            raise ValueError("val=%s is unknown" % (val,))
-        if val == World.DEAD:
-            if pos in self.field:
-                del self.field[pos]
-        else:
-            self.field[pos] = val
+        if val == 0:
+            raise ValueError("val=%s must be a non-zero integer" % (val,))
+        self.field[pos] = val
 
     def step(self):
         self.morgue = set()
@@ -45,18 +38,14 @@ class World (object):
                 )
                 count = sum(1 for pos in surround_poses if pos in self and self[pos] > 0)
                 cell = self[pos]
-                if cell == World.DEAD:
-                    if count == 3:
-                        self.kindergarten.add(pos)
-                elif cell == World.ALIVE:
-                    if not 2 <= count <= 3:
-                        self.morgue.add(pos)
-                else:
-                    raise NotImplementedError("cell type %s is unhandled" % (cell,))
+                if cell < 0 and count == 3:
+                    self.kindergarten.add(pos)
+                elif cell > 0 and not 2 <= count <= 3:
+                    self.morgue.add(pos)
         for pos in self.kindergarten:
-            self.field[pos] = World.ALIVE
+            self.field[pos] = 1
         for pos in self.morgue:
-            self.field[pos] = World.DEAD
+            self.field[pos] = -1
 
 
 WIDTH = 40
@@ -67,16 +56,18 @@ world = World(width=WIDTH, height=HEIGHT)
 # Populate the world randomly
 for y in range(HEIGHT):
     for x in range(WIDTH):
-        world[x, y] = random.choice((World.DEAD, World.ALIVE))
+        world[x, y] = random.choice((1, -1))
 
 
+DEAD = object()
 CEASING = object()
 ARISING = object()
+ALIVE = object()
 def render(world):
     CELL_TO_CHAR = {
-        World.DEAD: " ",
+        DEAD: " ",
         ARISING: ".",
-        World.ALIVE: "O",
+        ALIVE: "O",
         CEASING: "x",
     }
     for y in range(HEIGHT):
@@ -84,7 +75,8 @@ def render(world):
             pos = (x, y)
             cell = (pos in world.kindergarten and ARISING) \
                 or (pos in world.morgue and CEASING) \
-                or (world[x, y])
+                or (world[x, y] > 0 and ALIVE) \
+                or DEAD
             print("%s" % (CELL_TO_CHAR[cell],), end="")
         print()
 
