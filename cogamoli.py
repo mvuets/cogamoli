@@ -59,26 +59,18 @@ for y in range(HEIGHT):
         world[x, y] = random.choice((1, -1))
 
 
-DEAD = object()
-CEASING = object()
-ARISING = object()
-ALIVE = object()
-CELL_TO_CHAR = {
-    DEAD: " ",
-    ARISING: ".",
-    ALIVE: "O",
-    CEASING: "x",
-}
+def invert(text, yes):
+    if yes:
+        return "\x1b[7m%s\x1b[0m" % text
+    else:
+        return text
 
 def render(world):
     for y in range(HEIGHT):
         for x in range(WIDTH):
             pos = (x, y)
-            cell = (pos in world.kindergarten and ARISING) \
-                or (pos in world.morgue and CEASING) \
-                or (world[x, y] > 0 and ALIVE) \
-                or DEAD
-            print("%s" % (CELL_TO_CHAR[cell],), end="")
+            age = world[pos]
+            print("%s" % (invert(min(abs(age), 9), age > 0),), end="")
         print()
 
 print("<enter> to step; ^C to quit")
