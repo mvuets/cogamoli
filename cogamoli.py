@@ -42,6 +42,8 @@ class World (object):
                     self.kindergarten.add(pos)
                 elif cell > 0 and not 2 <= count <= 3:
                     self.morgue.add(pos)
+                else:
+                    self[pos] = cell + (cell > 0 and 1 or -1)
         for pos in self.kindergarten:
             self.field[pos] = 1
         for pos in self.morgue:
