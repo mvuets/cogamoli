@@ -1,5 +1,6 @@
 #!/usr/bin/python2
 
+from __future__ import print_function
 import random
 
 class World (object):
@@ -84,10 +85,10 @@ def render(world):
             cell = (pos in world.kindergarten and ARISING) \
                 or (pos in world.morgue and CEASING) \
                 or (world[x, y])
-            print "%s" % (CELL_TO_CHAR[cell],),
-        print
+            print("%s" % (CELL_TO_CHAR[cell],), end="")
+        print()
 
-print "<enter> to step; ^C to quit"
+print("<enter> to step; ^C to quit")
 while True:
     raw_input()
     render(world)
