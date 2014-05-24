@@ -20,7 +20,7 @@ class World (object):
     def __setitem__(self, pos, val):
         self[pos] # boundary check
         if val == 0:
-            raise ValueError("val=%s must be a non-zero integer" % (val,))
+            raise ValueError("val must be a non-zero integer" % (val,))
         self.field[pos] = val
 
     def step(self):
