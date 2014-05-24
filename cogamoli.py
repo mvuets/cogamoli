@@ -4,14 +4,14 @@ import random
 
 class World (object):
     DEAD = -2
-    ARISING = -1
     ALIVE = 1
-    CEASING = 2
 
     def __init__(self, width, height):
-        self.field = {}
         self.width = width
         self.height = height
+        self.field = {}
+        self.morgue = set()
+        self.kindergarten = set()
 
     def __contains__(self, pos):
         return 0 <= pos[0] < self.width and 0 <= pos[1] < self.height
@@ -23,7 +23,7 @@ class World (object):
 
     def __setitem__(self, pos, val):
         self[pos] # boundary check
-        if not any(val == o for o in (World.DEAD, World.ARISING, World.ALIVE, World.CEASING)):
+        if not any(val == o for o in (World.DEAD, World.ALIVE)):
             raise ValueError("val=%s is unknown" % (val,))
         if val == World.DEAD:
             if pos in self.field:
@@ -32,6 +32,8 @@ class World (object):
             self.field[pos] = val
 
     def step(self):
+        self.morgue = set()
+        self.kindergarten = set()
         for y in range(self.height):
             for x in range(self.width):
                 pos = (x, y)
@@ -44,17 +46,16 @@ class World (object):
                 cell = self[pos]
                 if cell == World.DEAD:
                     if count == 3:
-                        self[pos] = World.ARISING
+                        self.kindergarten.add(pos)
                 elif cell == World.ALIVE:
                     if not 2 <= count <= 3:
-                        self[pos] = World.CEASING
+                        self.morgue.add(pos)
                 else:
                     raise NotImplementedError("cell type %s is unhandled" % (cell,))
-        for pos, cell in self.field.items():
-            if cell == World.ARISING:
-                self[pos] = World.ALIVE
-            elif cell == World.CEASING:
-                self[pos] = World.DEAD
+        for pos in self.kindergarten:
+            self.field[pos] = World.ALIVE
+        for pos in self.morgue:
+            self.field[pos] = World.DEAD
 
 
 WIDTH = 40
