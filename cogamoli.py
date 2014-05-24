@@ -63,13 +63,14 @@ DEAD = object()
 CEASING = object()
 ARISING = object()
 ALIVE = object()
+CELL_TO_CHAR = {
+    DEAD: " ",
+    ARISING: ".",
+    ALIVE: "O",
+    CEASING: "x",
+}
+
 def render(world):
-    CELL_TO_CHAR = {
-        DEAD: " ",
-        ARISING: ".",
-        ALIVE: "O",
-        CEASING: "x",
-    }
     for y in range(HEIGHT):
         for x in range(WIDTH):
             pos = (x, y)
